@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:16
+    container_name: enterprise_appointments_db
+    environment:
+      POSTGRES_DB: appointments
+      POSTGRES_USER: appointments_user
+      POSTGRES_PASSWORD: appointments_pass
+      TZ: America/Argentina/Buenos_Aires
+    ports:
+      - "5433:5432"
+    volumes:
+      - appointments_pgdata:/var/lib/postgresql/data
+
+volumes:
+  appointments_pgdata:
