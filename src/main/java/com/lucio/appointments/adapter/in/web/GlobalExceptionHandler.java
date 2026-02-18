@@ -2,6 +2,7 @@ package com.lucio.appointments.adapter.in.web;
 
 import com.lucio.appointments.domain.exception.EmailAlreadyExistsException;
 import com.lucio.appointments.domain.exception.InvalidCredentialsException;
+import com.lucio.appointments.domain.exception.InvalidRefreshTokenException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +39,16 @@ public class GlobalExceptionHandler {
 
         @ExceptionHandler(InvalidCredentialsException.class)
         public ResponseEntity<?> handleInvalidCredentials(InvalidCredentialsException ex) {
+                return ResponseEntity.status(401).body(
+                                Map.of(
+                                                "timestamp", Instant.now(),
+                                                "status", 401,
+                                                "error", "Unauthorized",
+                                                "message", ex.getMessage()));
+        }
+
+        @ExceptionHandler(InvalidRefreshTokenException.class)
+        public ResponseEntity<?> handleInvalidRefresh(InvalidRefreshTokenException ex) {
                 return ResponseEntity.status(401).body(
                                 Map.of(
                                                 "timestamp", Instant.now(),

@@ -2,10 +2,13 @@ package com.lucio.appointments.adapter.in.web;
 
 import com.lucio.appointments.adapter.in.web.dto.LoginRequest;
 import com.lucio.appointments.adapter.in.web.dto.LoginResponse;
+import com.lucio.appointments.adapter.in.web.dto.RefreshRequest;
 import com.lucio.appointments.adapter.in.web.dto.RegisterUserRequest;
 import com.lucio.appointments.adapter.in.web.dto.RegisterUserResponse;
 import com.lucio.appointments.domain.port.in.LoginCommand;
 import com.lucio.appointments.domain.port.in.LoginUseCase;
+import com.lucio.appointments.domain.port.in.RefreshAccessTokenUseCase;
+import com.lucio.appointments.domain.port.in.RefreshCommand;
 import com.lucio.appointments.domain.port.in.RegisterUserCommand;
 import com.lucio.appointments.domain.port.in.RegisterUserUseCase;
 import jakarta.validation.Valid;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
 
+        private final RefreshAccessTokenUseCase refreshAccessTokenUseCase;
         private final RegisterUserUseCase registerUserUseCase;
         private final LoginUseCase loginUseCase;
 
@@ -48,5 +52,11 @@ public class AuthController {
 
                 return ResponseEntity.ok(
                                 new LoginResponse(result.accessToken(), result.refreshToken()));
+        }
+
+        @PostMapping("/refresh")
+        public ResponseEntity<LoginResponse> refresh(@Valid @RequestBody RefreshRequest request) {
+                var result = refreshAccessTokenUseCase.refresh(new RefreshCommand(request.refreshToken()));
+                return ResponseEntity.ok(new LoginResponse(result.accessToken(), result.refreshToken()));
         }
 }
