@@ -14,14 +14,14 @@ spring:
       hibernate:
         format_sql: true
 
-  security:
-  jwt:
-    secret: "supersecretkeysupersecretkeysupersecretkey"
-    access-validity: 900000
-    refresh-validity: 604800000
-
   flyway:
     enabled: true
 
 server:
   port: 8081
+
+security:
+  jwt:
+    secret: "supersecretkeysupersecretkeysupersecretkey"
+    access-validity: 900000
+    refresh-validity: 604800000

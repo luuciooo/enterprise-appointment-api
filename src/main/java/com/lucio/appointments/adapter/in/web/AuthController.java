@@ -1,7 +1,11 @@
 package com.lucio.appointments.adapter.in.web;
 
+import com.lucio.appointments.adapter.in.web.dto.LoginRequest;
+import com.lucio.appointments.adapter.in.web.dto.LoginResponse;
 import com.lucio.appointments.adapter.in.web.dto.RegisterUserRequest;
 import com.lucio.appointments.adapter.in.web.dto.RegisterUserResponse;
+import com.lucio.appointments.domain.port.in.LoginCommand;
+import com.lucio.appointments.domain.port.in.LoginUseCase;
 import com.lucio.appointments.domain.port.in.RegisterUserCommand;
 import com.lucio.appointments.domain.port.in.RegisterUserUseCase;
 import jakarta.validation.Valid;
@@ -14,27 +18,35 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final RegisterUserUseCase registerUserUseCase;
+        private final RegisterUserUseCase registerUserUseCase;
+        private final LoginUseCase loginUseCase;
 
-    @PostMapping("/register")
-    public ResponseEntity<RegisterUserResponse> register(
-            @Valid @RequestBody RegisterUserRequest request
-    ) {
+        @PostMapping("/register")
+        public ResponseEntity<RegisterUserResponse> register(
+                        @Valid @RequestBody RegisterUserRequest request) {
 
-        var user = registerUserUseCase.register(
-                RegisterUserCommand.builder()
-                        .email(request.email())
-                        .password(request.password())
-                        .fullName(request.fullName())
-                        .build()
-        );
+                var user = registerUserUseCase.register(
+                                RegisterUserCommand.builder()
+                                                .email(request.email())
+                                                .password(request.password())
+                                                .fullName(request.fullName())
+                                                .build());
 
-        return ResponseEntity.ok(
-                new RegisterUserResponse(
-                        user.getId(),
-                        user.getEmail(),
-                        user.getFullName()
-                )
-        );
-    }
+                return ResponseEntity.ok(
+                                new RegisterUserResponse(
+                                                user.getId(),
+                                                user.getEmail(),
+                                                user.getFullName()));
+        }
+
+        @PostMapping("/login")
+        public ResponseEntity<LoginResponse> login(
+                        @Valid @RequestBody LoginRequest request) {
+
+                var result = loginUseCase.login(
+                                new LoginCommand(request.email(), request.password()));
+
+                return ResponseEntity.ok(
+                                new LoginResponse(result.accessToken(), result.refreshToken()));
+        }
 }
