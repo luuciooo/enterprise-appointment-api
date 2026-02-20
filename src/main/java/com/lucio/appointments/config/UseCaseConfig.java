@@ -8,6 +8,7 @@ import com.lucio.appointments.domain.port.in.RefreshAccessTokenUseCase;
 import com.lucio.appointments.domain.port.in.RegisterUserUseCase;
 import com.lucio.appointments.domain.port.out.PasswordHasher;
 import com.lucio.appointments.domain.port.out.RefreshTokenRepositoryPort;
+import com.lucio.appointments.domain.port.out.RoleRepositoryPort;
 import com.lucio.appointments.domain.port.out.TokenProvider;
 import com.lucio.appointments.domain.port.out.UserRepositoryPort;
 import org.springframework.context.annotation.Bean;
@@ -21,8 +22,9 @@ public class UseCaseConfig {
     @Bean
     public RegisterUserUseCase registerUserUseCase(
             UserRepositoryPort userRepositoryPort,
-            PasswordHasher passwordHasher) {
-        return new RegisterUserService(userRepositoryPort, passwordHasher);
+            PasswordHasher passwordHasher,
+            RoleRepositoryPort roleRepositoryPort) {
+        return new RegisterUserService(userRepositoryPort, passwordHasher, roleRepositoryPort);
     }
 
     @Bean

@@ -6,8 +6,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,11 +24,21 @@ public class AuthUserDetailsService implements UserDetailsService {
         var user = userRepositoryPort.findById(id)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        // Por ahora sin roles (los sumamos después)
+        Set<SimpleGrantedAuthority> authorities = user.getRoles() == null
+                ? Set.of()
+                : user.getRoles().stream()
+                .filter(Objects::nonNull)
+                .flatMap(role -> role.getPermissions() == null
+                        ? java.util.stream.Stream.empty()
+                        : role.getPermissions().stream())
+                .filter(Objects::nonNull)
+                .map(permission -> new SimpleGrantedAuthority(permission.getName()))
+                .collect(Collectors.toSet());
+
         return new org.springframework.security.core.userdetails.User(
                 user.getId().toString(),
                 user.getPasswordHash(),
-                List.of(new SimpleGrantedAuthority("ROLE_USER"))
+                authorities
         );
     }
 }
